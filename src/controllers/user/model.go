@@ -65,12 +65,14 @@ type UserLoginReq struct {
 }
 
 type UserLoginResp struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    model.Token `json:"data"`
 }
 
 type UserLogoutReq struct {
-	Name string `json:"name"`
+	Id    string
+	Token string
 }
 
 type UserLogoutResp struct {
@@ -86,4 +88,13 @@ type UserGetByKeyResp struct {
 	Code    int          `json:"code"`
 	Message string       `json:"message"`
 	Data    []model.User `json:"data"`
+}
+type UserGetProfileReq struct {
+	Id string
+}
+
+type UserGetProfileResp struct {
+	Code    int        `json:"code"`
+	Message string     `json:"message"`
+	Data    model.User `json:"data"`
 }

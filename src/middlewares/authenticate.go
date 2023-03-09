@@ -3,15 +3,17 @@ package middleware
 import (
 	"net/http"
 
+	token "gin-mongo/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
+		accessToken := token.ExtractToken(c)
+		r := c.Request
 		// log.Println(authHeader)
-
-		if authHeader == "12456" {
+		if token.IsValidToken(r.Context(), accessToken) {
 			c.Next()
 		} else {
 			// log.Println("Unauthorized")

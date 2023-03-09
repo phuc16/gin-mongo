@@ -2,29 +2,33 @@ package routes
 
 import (
 	"gin-mongo/src/controllers/user"
-	"log"
-
 	middlewares "gin-mongo/src/middlewares"
+	token "gin-mongo/utils"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserRoutes(routes *gin.Engine) {
-	authRoutes := routes.Group("api/user", middlewares.Authenticate())
+	notAuthRoutes := routes.Group("api/user")
 	{
-		authRoutes.POST("/register", createUserNew) //nên để tên api đàng hoàng nha em . /user/createUser
-		authRoutes.GET("/getAll", getAllUsers)      //user/getAll
-		authRoutes.GET("/getById", getUserById)     // hạn chế sử dụng kiểu url như này nha em, để key - value 1 phần sẽ bảo mật hơn vì có key nữa, và no cung k ảnh hưởng trực tiếp đến url,
+		notAuthRoutes.POST("/register", createUserNew) //nên để tên api đàng hoàng nha em . /user/createUser
+		notAuthRoutes.GET("/getAll", getAllUsers)      //user/getAll
+		notAuthRoutes.GET("/getById", getUserById)     // hạn chế sử dụng kiểu url như này nha em, để key - value 1 phần sẽ bảo mật hơn vì có key nữa, và no cung k ảnh hưởng trực tiếp đến url,
 		// // với ko ai để id lên param nhen, thường sẽ để trong body. //sua lai query param giup anh nhen
 
-		authRoutes.PUT("/updateById", updateUserById)  //sua lai query param giup anh nhen
-		authRoutes.POST("/deleteById", deleteUserById) //sua lai query param giup anh nhen
+		notAuthRoutes.PUT("/updateById", updateUserById)  //sua lai query param giup anh nhen
+		notAuthRoutes.POST("/deleteById", deleteUserById) //sua lai query param giup anh nhen
 
+		notAuthRoutes.POST("/login", login)
+		notAuthRoutes.GET("/search", getUserByKey)
+	}
+	authRoutes := routes.Group("api/user", middlewares.Authenticate())
+	{
+		authRoutesg.POST("/logout", logout)
+		authRoutes.GET("/profile", getUserProfile)
 	}
 
-	routes.POST("api/user/login", login)
-	routes.POST("api/user/logout", logout)
-	routes.GET("api/user/search", getUserByKey)
 }
 
 func createUserNew(c *gin.Context) {
@@ -135,16 +139,19 @@ func logout(c *gin.Context) {
 		request  = &user.UserLogoutReq{}
 		response = user.UserLogoutResp{}
 		r        = c.Request
+		err      error
 	)
+	request.Id, err = token.ExtractTokenName(c)
+	request.Token = token.ExtractToken(c)
 
-	if err := c.Bind(&request); err != nil {
-		response.Code = 400
-		response.Message = err.Error()
-		c.JSON(response.Code, response)
-	} else {
-		response = user.Logout(r.Context(), request)
+	if err != nil {
+		response.Code = 401
+		response.Message = "Unauthorized"
 		c.JSON(response.Code, response)
 	}
+
+	response = user.Logout(r.Context(), request)
+	c.JSON(response.Code, response)
 }
 
 func getUserByKey(c *gin.Context) {
@@ -162,4 +169,25 @@ func getUserByKey(c *gin.Context) {
 		response = user.GetUserByKey(r.Context(), request)
 		c.JSON(response.Code, response)
 	}
+}
+
+func getUserProfile(c *gin.Context) {
+	var (
+		request  = &user.UserGetProfileReq{}
+		response = user.UserGetProfileResp{}
+		r        = c.Request
+		err      error
+	)
+
+	log.Println("aaa")
+	request.Id, err = token.ExtractTokenName(c)
+
+	if err != nil {
+		response.Code = 401
+		response.Message = "Unauthorized"
+		c.JSON(response.Code, response)
+	}
+
+	response = user.GetUserProfile(r.Context(), request)
+	c.JSON(response.Code, response)
 }

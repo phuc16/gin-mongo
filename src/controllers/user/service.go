@@ -4,6 +4,8 @@ import (
 	"context"
 	model "gin-mongo/src/models"
 	"gin-mongo/src/mongoDb"
+	token "gin-mongo/utils"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -48,6 +50,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 		Age:       req.Age,
 		Password:  req.Password,
 		Status:    "active",
+		IsLogged:  false,
 		CreatedAt: time.Now().Format(timeFormat),
 		UpdatedAt: time.Now().Format(timeFormat),
 	}
@@ -273,21 +276,67 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 		return resp
 	}
 
+	log.Println(user)
+	accessToken, err := token.GenerateToken(user.Id)
+
+	if err != nil {
+		resp.Code = 409
+		resp.Message = err.Error()
+		return resp
+	}
+
+	token := model.Token{
+		AccessToken: accessToken,
+		ExpiredAt:   time.Now().AddDate(0, 0, 1).Format(timeFormat),
+		Disabled:    false,
+	}
+
+	err = mongoDb.CreateNewToken(ctx, token)
+
+	if err != nil {
+		resp.Code = 409
+		resp.Message = err.Error()
+		return resp
+	}
+
 	resp.Code = 200
 	resp.Message = "Success"
+	resp.Data = token
 	return resp
 }
 
 func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	resp := UserLogoutResp{}
 
-	if req.Name == "" {
+	if req.Id == "" {
 		resp.Code = 400
 		resp.Message = "Invalid data"
 		return resp
 	}
 
-	res, err := mongoDb.UserLogout(ctx, bson.M{"name": req.Name, "status": "active", "is_logged": true})
+	objId, err := primitive.ObjectIDFromHex(req.Id)
+
+	if err != nil {
+		resp.Code = 400
+		resp.Message = err.Error()
+		return resp
+	}
+
+	res, err := mongoDb.UserLogout(ctx, objId)
+
+	if err != nil {
+		resp.Code = 400
+		resp.Message = err.Error()
+		return resp
+	}
+
+	if res < 1 {
+		resp.Code = 401
+		resp.Message = "User hasn't been registered or logged"
+		return resp
+	}
+
+	res, err = mongoDb.DeleteToken(ctx, req.Token)
 
 	if err != nil {
 		resp.Code = 400
@@ -311,6 +360,42 @@ func GetUserByKey(ctx context.Context, req *UserGetByKeyReq) UserGetByKeyResp {
 	resp := UserGetByKeyResp{}
 
 	res, err := mongoDb.GetUserByKey(ctx, req.Search)
+
+	if err == mongo.ErrNoDocuments {
+		resp.Code = 404
+		resp.Message = "Not found"
+		return resp
+	} else if err != nil {
+		resp.Code = 400
+		resp.Message = err.Error()
+		return resp
+	}
+
+	resp.Code = 200
+	resp.Message = "Success"
+	resp.Data = res
+	return resp
+}
+
+func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileResp {
+	resp := UserGetProfileResp{}
+	// log.Println("userId", req.Id)
+
+	if req.Id == "" {
+		resp.Code = 400
+		resp.Message = "Id không tồn tại"
+		return resp
+	}
+
+	objId, err := primitive.ObjectIDFromHex(req.Id)
+
+	if err != nil {
+		resp.Code = 400
+		resp.Message = err.Error()
+		return resp
+	}
+
+	res, err := mongoDb.GetUserById(ctx, bson.M{"_id": objId, "status": "active"})
 
 	if err == mongo.ErrNoDocuments {
 		resp.Code = 404

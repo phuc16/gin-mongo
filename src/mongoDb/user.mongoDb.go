@@ -14,10 +14,10 @@ import (
 
 var timeFormat = "02/01/2006 15:04:05 -0700"
 
-var collection *mongo.Collection = database.GetCollection(database.Client, "users")
+var userCollection *mongo.Collection = database.GetCollection(database.Client, "users")
 
 func GetAllUsers(ctx context.Context, fromDate string, toDate string) ([]models.User, error) {
-	res, err := collection.Find(ctx, bson.M{"status": "active", "created_at": bson.M{"$gte": fromDate, "$lt": toDate}})
+	res, err := userCollection.Find(ctx, bson.M{"status": "active", "created_at": bson.M{"$gte": fromDate, "$lt": toDate}})
 
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func GetAllUsers(ctx context.Context, fromDate string, toDate string) ([]models.
 
 func GetUserById(ctx context.Context, filter bson.M) (models.User, error) {
 	var res models.User
-	err := collection.FindOne(ctx, filter).Decode(&res)
+	err := userCollection.FindOne(ctx, filter).Decode(&res)
 
 	if err != nil {
 		return models.User{}, err
@@ -51,7 +51,7 @@ func GetUserById(ctx context.Context, filter bson.M) (models.User, error) {
 
 func GetUserByName(ctx context.Context, filter bson.M) (models.User, error) {
 	var res models.User
-	err := collection.FindOne(ctx, filter).Decode(&res)
+	err := userCollection.FindOne(ctx, filter).Decode(&res)
 
 	if err != nil {
 		return models.User{}, err
@@ -69,7 +69,7 @@ func UpdateUserById(ctx context.Context, filter bson.M, user models.User) (int64
 			"updated_at": user.UpdatedAt,
 		},
 	}
-	res, err := collection.UpdateOne(ctx, filter, update)
+	res, err := userCollection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return -1, err
@@ -91,7 +91,7 @@ func DeleteUserById(ctx context.Context, objId primitive.ObjectID) (int64, error
 		},
 	}
 
-	res, err := collection.UpdateOne(ctx, filter, update)
+	res, err := userCollection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return -1, err
@@ -102,7 +102,18 @@ func DeleteUserById(ctx context.Context, objId primitive.ObjectID) (int64, error
 
 func CreateUserNew(ctx context.Context, user models.User) error {
 
-	_, err := collection.InsertOne(ctx, user)
+	insert := bson.M{
+		"name":       user.Name,
+		"full_name":  user.FullName,
+		"age":        user.Age,
+		"password":   user.Password,
+		"status":     user.Status,
+		"is_logged":  user.IsLogged,
+		"created_at": user.CreatedAt,
+		"updated_at": user.UpdatedAt,
+	}
+
+	_, err := userCollection.InsertOne(ctx, insert)
 
 	if err != nil {
 		return err
@@ -112,7 +123,7 @@ func CreateUserNew(ctx context.Context, user models.User) error {
 }
 
 func UserLogin(ctx context.Context, filter bson.M) (int64, error) {
-	res, err := collection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{"is_logged": true}})
+	res, err := userCollection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{"is_logged": true}})
 
 	if err != nil {
 		return -1, err
@@ -121,8 +132,19 @@ func UserLogin(ctx context.Context, filter bson.M) (int64, error) {
 	return res.MatchedCount, nil
 }
 
-func UserLogout(ctx context.Context, filter bson.M) (int64, error) {
-	res, err := collection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{"is_logged": false}})
+func UserLogout(ctx context.Context, objId primitive.ObjectID) (int64, error) {
+	filter := bson.M{
+		"_id":       objId,
+		"status":    "active",
+		"is_logged": true,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"is_logged": false,
+		},
+	}
+
+	res, err := userCollection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return -1, err
@@ -140,7 +162,7 @@ func GetUserByKey(ctx context.Context, search string) ([]models.User, error) {
 		"status": "active",
 	}
 
-	res, err := collection.Find(ctx, filter)
+	res, err := userCollection.Find(ctx, filter)
 
 	if err != nil {
 		return nil, err
