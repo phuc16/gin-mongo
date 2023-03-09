@@ -17,13 +17,14 @@ func UserRoutes(routes *gin.Engine) {
 		authRoutes.GET("/getById", getUserById)     // hạn chế sử dụng kiểu url như này nha em, để key - value 1 phần sẽ bảo mật hơn vì có key nữa, và no cung k ảnh hưởng trực tiếp đến url,
 		// // với ko ai để id lên param nhen, thường sẽ để trong body. //sua lai query param giup anh nhen
 
-		authRoutes.PUT("/updateById", updateUserById)    //sua lai query param giup anh nhen
-		authRoutes.DELETE("/deleteById", deleteUserById) //sua lai query param giup anh nhen
+		authRoutes.PUT("/updateById", updateUserById)  //sua lai query param giup anh nhen
+		authRoutes.POST("/deleteById", deleteUserById) //sua lai query param giup anh nhen
 
 	}
 
 	routes.POST("api/user/login", login)
 	routes.POST("api/user/logout", logout)
+	routes.GET("api/user/search", getUserByKey)
 }
 
 func createUserNew(c *gin.Context) {
@@ -142,6 +143,23 @@ func logout(c *gin.Context) {
 		c.JSON(response.Code, response)
 	} else {
 		response = user.Logout(r.Context(), request)
+		c.JSON(response.Code, response)
+	}
+}
+
+func getUserByKey(c *gin.Context) {
+	var (
+		request  = &user.UserGetByKeyReq{}
+		response = user.UserGetByKeyResp{}
+		r        = c.Request
+	)
+
+	if err := c.Bind(&request); err != nil {
+		response.Code = 400
+		response.Message = err.Error()
+		c.JSON(response.Code, response)
+	} else {
+		response = user.GetUserByKey(r.Context(), request)
 		c.JSON(response.Code, response)
 	}
 }

@@ -16,7 +16,7 @@ var timeFormat = "02/01/2006:15:04:05 -0700"
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	//Check validate
 	resp := UserRegisterResp{}
-	if req.Name == "" || req.Age == 0 || req.Password == "" {
+	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" {
 		resp.Code = 400
 		resp.Message = "Invalid data"
 		return resp
@@ -44,10 +44,12 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	// Insert DB
 	userMongo := model.User{
 		Name:      req.Name,
+		FullName:  req.FullName,
 		Age:       req.Age,
 		Password:  req.Password,
 		Status:    "active",
 		CreatedAt: time.Now().Format(timeFormat),
+		UpdatedAt: time.Now().Format(timeFormat),
 	}
 
 	err = mongoDb.CreateUserNew(ctx, userMongo)
@@ -59,6 +61,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	}
 
 	//if success
+	resp.Code = 200
 	resp.Message = "Success"
 	return resp
 
@@ -147,9 +150,9 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
-	if req.Name == "" || req.Age == 0 {
+	if req.FullName == "" || req.Password == "" || req.Age == 0 {
 		resp.Code = 400
-		resp.Message = "Trường Name hoặc Age không hợp lệ"
+		resp.Message = "Invalid data"
 		return resp
 	}
 
@@ -162,13 +165,18 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 	}
 
 	newUser := model.User{
-		Name:     req.Name,
-		Password: req.Password,
-		Age:      req.Age,
-		Status:   "active",
+		FullName:  req.FullName,
+		Password:  req.Password,
+		Age:       req.Age,
+		UpdatedAt: time.Now().Format(timeFormat),
 	}
 
-	res, err := mongoDb.UpdateUserById(ctx, bson.M{"_id": objId, "status": "active"}, newUser)
+	filter := bson.M{
+		"_id":    objId,
+		"status": "active",
+	}
+
+	res, err := mongoDb.UpdateUserById(ctx, filter, newUser)
 
 	if err != nil {
 		resp.Code = 400
@@ -205,7 +213,7 @@ func DeleteUserById(ctx context.Context, req *UserDeleteByIdReq) UserDeleteByIdR
 		return resp
 	}
 
-	res, err := mongoDb.DeleteUserById(ctx, bson.M{"_id": objId, "status": "active"}, bson.M{"status": "deleted", "created_at": time.Now().Format(timeFormat)})
+	res, err := mongoDb.DeleteUserById(ctx, objId)
 
 	if err != nil {
 		resp.Code = 400
@@ -297,4 +305,25 @@ func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	resp.Message = "Success"
 	return resp
 
+}
+
+func GetUserByKey(ctx context.Context, req *UserGetByKeyReq) UserGetByKeyResp {
+	resp := UserGetByKeyResp{}
+
+	res, err := mongoDb.GetUserByKey(ctx, req.Search)
+
+	if err == mongo.ErrNoDocuments {
+		resp.Code = 404
+		resp.Message = "Not found"
+		return resp
+	} else if err != nil {
+		resp.Code = 400
+		resp.Message = err.Error()
+		return resp
+	}
+
+	resp.Code = 200
+	resp.Message = "Success"
+	resp.Data = res
+	return resp
 }

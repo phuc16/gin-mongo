@@ -6,6 +6,7 @@ import (
 
 type UserRegisterReq struct { //request API
 	Name     string `json:"name"`
+	FullName string `json:"fullName"`
 	Age      int    `json:"age"`
 	Password string `json:"password"`
 }
@@ -39,6 +40,7 @@ type UserGetByIdResp struct {
 type UserUpdateByIdReq struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
+	FullName string `json:"fullName"`
 	Age      int    `json:"age"`
 	Password string `json:"password"`
 }
@@ -74,4 +76,14 @@ type UserLogoutReq struct {
 type UserLogoutResp struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+type UserGetByKeyReq struct {
+	Search string `form:"search"`
+}
+
+type UserGetByKeyResp struct {
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Data    []model.User `json:"data"`
 }
