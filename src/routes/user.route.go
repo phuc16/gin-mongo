@@ -22,12 +22,12 @@ func UserRoutes(routes *gin.Engine) {
 		notAuthRoutes.POST("/login", login)
 		notAuthRoutes.GET("/search", getUserByKey)
 	}
+
 	authRoutes := routes.Group("api/user", middlewares.Authenticate())
 	{
 		authRoutes.POST("/logout", logout)
 		authRoutes.GET("/profile", getUserProfile)
 	}
-
 }
 
 func createUserNew(c *gin.Context) {

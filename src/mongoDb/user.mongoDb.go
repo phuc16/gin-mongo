@@ -156,8 +156,16 @@ func UserLogout(ctx context.Context, objId primitive.ObjectID) (int64, error) {
 func GetUserByKey(ctx context.Context, search string) ([]models.User, error) {
 	filter := bson.M{
 		"$or": []bson.M{
-			{"name": search},
-			{"full_name": search},
+			{
+				"name": bson.M{
+					"$regex": search,
+				},
+			},
+			{
+				"full_name": bson.M{
+					"$regex": search,
+				},
+			},
 		},
 		"status": "active",
 	}
