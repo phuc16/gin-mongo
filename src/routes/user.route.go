@@ -25,7 +25,7 @@ func UserRoutes(routes *gin.Engine) {
 	}
 	authRoutes := routes.Group("api/user", middlewares.Authenticate())
 	{
-		authRoutesg.POST("/logout", logout)
+		authRoutes.POST("/logout", logout)
 		authRoutes.GET("/profile", getUserProfile)
 	}
 

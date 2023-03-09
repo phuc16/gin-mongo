@@ -215,3 +215,15 @@ time="2023-03-09T16:57:16+07:00" level=warning clientIP="::1" dataLength=37 late
 time="2023-03-09T16:58:46+07:00" level=info clientIP="::1" dataLength=227 latency=4ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
 time="2023-03-09T16:58:55+07:00" level=warning clientIP="::1" dataLength=37 latency=3ms method=GET path=/api/user/profile referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
 time="2023-03-09T16:58:57+07:00" level=info clientIP="::1" dataLength=227 latency=3ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:11:36+07:00" level=info clientIP="::1" dataLength=32 latency=12ms method=POST path=/api/user/register referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:11:45+07:00" level=warning clientIP="::1" dataLength=37 latency=2ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:11:48+07:00" level=info clientIP="::1" dataLength=298 latency=10ms method=POST path=/api/user/login referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:02+07:00" level=info clientIP="::1" dataLength=32 latency=3ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:04+07:00" level=warning clientIP="::1" dataLength=37 latency=3ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:15+07:00" level=info clientIP="::1" dataLength=298 latency=2ms method=POST path=/api/user/login referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:17+07:00" level=warning clientIP="::1" dataLength=97 latency=1ms method=POST path=/api/user/login referer= statusCode=409 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:37+07:00" level=info clientIP="::1" dataLength=227 latency=3ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:40+07:00" level=warning clientIP="::1" dataLength=37 latency=2ms method=GET path=/api/user/profile referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:42+07:00" level=info clientIP="::1" dataLength=227 latency=4ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:46+07:00" level=info clientIP="::1" dataLength=32 latency=3ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-09T17:12:48+07:00" level=warning clientIP="::1" dataLength=37 latency=2ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
