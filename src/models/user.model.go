@@ -6,6 +6,6 @@ type User struct {
 	Password  string `bson:"password" json:"password"`
 	Age       int    `bson:"age" json:"age"`
 	Status    string `bson:"status" json:"-"`
-	CreatedAt string `bson:"created_at" json:"-"`
-	UpdatedAt string `bson:"updated_at" json:"-"`
+	CreatedAt string `bson:"created_at" json:"createdAt"`
+	UpdatedAt string `bson:"updated_at" json:"updatedAt"`
 }
