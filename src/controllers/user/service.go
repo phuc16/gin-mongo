@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var timeFormat = "02/01/2006:15:04:05 -0700"
+var timeFormat = "02/01/2006 15:04:05 -0700"
 
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	//Check validate
@@ -70,7 +70,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 func GetAllUsers(ctx context.Context, req *UserGetAllReq) UserGetAllResp {
 	resp := UserGetAllResp{}
 
-	if req.ToDate == "" {
+	if req.FromDate == "" {
 		tmpFromDate, err := time.Parse(timeFormat, timeFormat)
 
 		if err != nil {

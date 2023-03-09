@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var timeFormat = "02/01/2006:15:04:05 -0700"
+var timeFormat = "02/01/2006 15:04:05 -0700"
 
 var collection *mongo.Collection = database.GetCollection(database.Client, "users")
 
@@ -133,7 +133,10 @@ func UserLogout(ctx context.Context, filter bson.M) (int64, error) {
 
 func GetUserByKey(ctx context.Context, search string) ([]models.User, error) {
 	filter := bson.M{
-		"$or":    []bson.M{{"name": search}, {"full_name": search}},
+		"$or": []bson.M{
+			{"name": search},
+			{"full_name": search},
+		},
 		"status": "active",
 	}
 
