@@ -1,9 +1,8 @@
-package token
+package utils
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -43,9 +42,9 @@ func ExtractToken(c *gin.Context) string {
 	return ""
 }
 
-func ExtractTokenName(c *gin.Context) (string, error) {
+func ExtractTokenId(c *gin.Context) (string, error) {
 	tokenString := ExtractToken(c)
-	log.Println(tokenString)
+	// log.Println(tokenString)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

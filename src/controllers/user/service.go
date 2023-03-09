@@ -4,8 +4,7 @@ import (
 	"context"
 	model "gin-mongo/src/models"
 	"gin-mongo/src/mongoDb"
-	token "gin-mongo/utils"
-	"log"
+	utils "gin-mongo/utils"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,12 +42,20 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 		return resp
 	}
 
+	password, err := utils.HashPassword(req.Password)
+
+	if err != nil {
+		resp.Code = 500
+		resp.Message = "Internal server error"
+		return resp
+	}
+
 	// Insert DB
 	userMongo := model.User{
 		Name:      req.Name,
 		FullName:  req.FullName,
 		Age:       req.Age,
-		Password:  req.Password,
+		Password:  password,
 		Status:    "active",
 		IsLogged:  false,
 		CreatedAt: time.Now().Format(timeFormat),
@@ -167,9 +174,17 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 		return resp
 	}
 
+	password, err := utils.HashPassword(req.Password)
+
+	if err != nil {
+		resp.Code = 500
+		resp.Message = "Internal server error"
+		return resp
+	}
+
 	newUser := model.User{
 		FullName:  req.FullName,
-		Password:  req.Password,
+		Password:  password,
 		Age:       req.Age,
 		UpdatedAt: time.Now().Format(timeFormat),
 	}
@@ -256,7 +271,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 		return resp
 	}
 
-	if user.Password != req.Password {
+	if utils.CheckPasswordHash(req.Password, user.Password) == false {
 		resp.Code = 401
 		resp.Message = "Password is incorrect"
 		return resp
@@ -276,8 +291,8 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 		return resp
 	}
 
-	log.Println(user)
-	accessToken, err := token.GenerateToken(user.Id)
+	// log.Println(user)
+	accessToken, err := utils.GenerateToken(user.Id)
 
 	if err != nil {
 		resp.Code = 409

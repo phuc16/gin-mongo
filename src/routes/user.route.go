@@ -3,8 +3,7 @@ package routes
 import (
 	"gin-mongo/src/controllers/user"
 	middlewares "gin-mongo/src/middlewares"
-	token "gin-mongo/utils"
-	"log"
+	"gin-mongo/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -60,7 +59,6 @@ func getAllUsers(c *gin.Context) {
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
-		log.Println(request)
 		response = user.GetAllUsers(r.Context(), request)
 		c.JSON(response.Code, response)
 	}
@@ -78,7 +76,6 @@ func getUserById(c *gin.Context) {
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
-		log.Println(request)
 		response = user.GetUserById(r.Context(), request)
 		c.JSON(response.Code, response)
 	}
@@ -141,8 +138,8 @@ func logout(c *gin.Context) {
 		r        = c.Request
 		err      error
 	)
-	request.Id, err = token.ExtractTokenName(c)
-	request.Token = token.ExtractToken(c)
+	request.Id, err = utils.ExtractTokenId(c)
+	request.Token = utils.ExtractToken(c)
 
 	if err != nil {
 		response.Code = 401
@@ -179,7 +176,7 @@ func getUserProfile(c *gin.Context) {
 		err      error
 	)
 
-	request.Id, err = token.ExtractTokenName(c)
+	request.Id, err = utils.ExtractTokenId(c)
 
 	if err != nil {
 		response.Code = 401

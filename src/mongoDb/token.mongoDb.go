@@ -25,7 +25,6 @@ func CreateNewToken(ctx context.Context, token models.Token) error {
 }
 
 func GetToken(ctx context.Context, token string) error {
-	log.Println(token)
 	filter := bson.M{
 		"access_token": token,
 		"disabled":     false,
