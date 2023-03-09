@@ -179,7 +179,6 @@ func getUserProfile(c *gin.Context) {
 		err      error
 	)
 
-	log.Println("aaa")
 	request.Id, err = token.ExtractTokenName(c)
 
 	if err != nil {

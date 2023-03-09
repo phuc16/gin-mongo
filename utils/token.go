@@ -26,7 +26,6 @@ func GenerateToken(userId string) (string, error) {
 
 func IsValidToken(ctx context.Context, token string) bool {
 	err := mongoDb.GetToken(ctx, token)
-	log.Println("Aaaaâ")
 
 	if err != nil {
 		return false
