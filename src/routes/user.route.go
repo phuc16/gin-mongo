@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"gin-mongo/src/controllers/user"
 	middlewares "gin-mongo/src/middlewares"
 	"gin-mongo/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +32,7 @@ func UserRoutes(routes *gin.Engine) {
 	{
 		authRoutes.POST("/logout", logout)
 		authRoutes.GET("/profile", getUserProfile)
+		authRoutes.PUT("/updateRole", updateRole)
 	}
 }
 
@@ -139,10 +142,11 @@ func logout(c *gin.Context) {
 		request  = &user.UserLogoutReq{}
 		response = user.UserLogoutResp{}
 		r        = c.Request
-		err      error
 	)
-	request.Id, err = utils.ExtractTokenId(c)
+
+	claims, err := utils.ExtractTokenId(c)
 	request.Token = utils.ExtractToken(c)
+	request.Id = fmt.Sprintf("%v", claims["userId"])
 
 	if err != nil {
 		response.Code = ResCode.Unauthorized
@@ -176,10 +180,10 @@ func getUserProfile(c *gin.Context) {
 		request  = &user.UserGetProfileReq{}
 		response = user.UserGetProfileResp{}
 		r        = c.Request
-		err      error
 	)
 
-	request.Id, err = utils.ExtractTokenId(c)
+	claims, err := utils.ExtractTokenId(c)
+	request.Id = fmt.Sprintf("%v", claims["userId"])
 
 	if err != nil {
 		response.Code = ResCode.Unauthorized
@@ -188,5 +192,38 @@ func getUserProfile(c *gin.Context) {
 	} else {
 		response = user.GetUserProfile(r.Context(), request)
 		c.JSON(response.Code, response)
+	}
+}
+
+func updateRole(c *gin.Context) {
+	var (
+		request  = &user.UserUpdateRoleReq{}
+		response = user.UserUpdateRoleResp{}
+		r        = c.Request
+	)
+
+	claims, err := utils.ExtractTokenId(c)
+
+	if err != nil {
+		response.Code = ResCode.Unauthorized
+		response.Message = "Unauthorized"
+		c.JSON(response.Code, response)
+	} else if err := c.Bind(&request); err != nil {
+		response.Code = ResCode.BadRequest
+		response.Message = err.Error()
+		c.JSON(response.Code, response)
+	} else {
+		request.Id = fmt.Sprintf("%v", claims["userId"])
+		roleCode, err := strconv.Atoi(fmt.Sprintf("%v", claims["roleCode"]))
+
+		if err != nil {
+			response.Code = ResCode.BadRequest
+			response.Message = err.Error()
+			c.JSON(response.Code, response)
+		} else {
+			request.RoleCode = roleCode
+			response = user.UpdateRole(r.Context(), request)
+			c.JSON(response.Code, response)
+		}
 	}
 }

@@ -106,6 +106,7 @@ func CreateUserNew(ctx context.Context, user models.User) error {
 		"name":       user.Name,
 		"full_name":  user.FullName,
 		"age":        user.Age,
+		"role_code":  user.RoleCode,
 		"password":   user.Password,
 		"status":     user.Status,
 		"is_logged":  user.IsLogged,
@@ -189,4 +190,26 @@ func GetUserByKey(ctx context.Context, search string) ([]models.User, error) {
 	}
 
 	return users, err
+}
+
+func UpdateRole(ctx context.Context, objId primitive.ObjectID, roleCode int) (int64, error) {
+	filter := bson.M{
+		"_id":    objId,
+		"status": "active",
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"role_code":  roleCode,
+			"updated_at": time.Now().Format(timeFormat),
+		},
+	}
+
+	res, err := userCollection.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return res.MatchedCount, nil
 }

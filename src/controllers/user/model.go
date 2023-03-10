@@ -9,6 +9,7 @@ type UserRegisterReq struct { //request API
 	FullName string `json:"fullName"`
 	Age      int    `json:"age"`
 	Password string `json:"password"`
+	RoleCode int    `json:"roleCode"`
 }
 
 type UserRegisterResp struct { //response API
@@ -97,4 +98,15 @@ type UserGetProfileResp struct {
 	Code    int        `json:"code"`
 	Message string     `json:"message"`
 	Data    model.User `json:"data"`
+}
+type UserUpdateRoleReq struct {
+	Id              string `form:"-" json:"-"`                             // id of the user
+	UpdatedId       string `form:"updatedId" json:"updatedId"`             // id of the user need to update the role
+	RoleCode        int    `json:"-"`                                      // role of the user
+	UpdatedRoleCode int    `form:"updatedRoleCode" json:"updatedRoleCode"` // role of the user need to update the role
+}
+
+type UserUpdateRoleResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }

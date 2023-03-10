@@ -18,7 +18,7 @@ var ResCode = utils.ResCode
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	//Check validate
 	resp := UserRegisterResp{}
-	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" {
+	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" || req.RoleCode == 0 {
 		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
@@ -54,6 +54,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 		Name:      req.Name,
 		FullName:  req.FullName,
 		Age:       req.Age,
+		RoleCode:  req.RoleCode,
 		Password:  password,
 		Status:    "active",
 		IsLogged:  false,
@@ -291,7 +292,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	}
 
 	// log.Println(user)
-	token, err := utils.GenerateToken(user.Id)
+	token, err := utils.GenerateToken(user)
 
 	if err != nil {
 		resp.Code = ResCode.Conflict
@@ -432,5 +433,41 @@ func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileR
 	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = res
+	return resp
+}
+
+func UpdateRole(ctx context.Context, req *UserUpdateRoleReq) UserUpdateRoleResp {
+	resp := UserUpdateRoleResp{}
+
+	if req.RoleCode < 2 {
+		resp.Code = ResCode.Forbidden
+		resp.Message = "Forbidden"
+		return resp
+	}
+
+	objId, err := primitive.ObjectIDFromHex(req.UpdatedId)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	res, err := mongoDb.UpdateRole(ctx, objId, req.UpdatedRoleCode)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	if res < 1 {
+		resp.Code = ResCode.NotFound
+		resp.Message = "Not found"
+		return resp
+	}
+
+	resp.Code = ResCode.Success
+	resp.Message = "Success"
 	return resp
 }
