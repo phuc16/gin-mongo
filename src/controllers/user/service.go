@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var timeFormat = "02/01/2006 15:04:05 -0700"
+var timeFormat = utils.TimeFormat
 var ResCode = utils.ResCode
 
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
@@ -24,8 +24,6 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 		return resp
 	}
 	//
-
-	// log.Println(req)
 
 	//Kiểm tra user đã tồn tài chưa
 
@@ -293,7 +291,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	}
 
 	// log.Println(user)
-	accessToken, err := utils.GenerateToken(user.Id)
+	token, err := utils.GenerateToken(user.Id)
 
 	if err != nil {
 		resp.Code = ResCode.Conflict
@@ -301,17 +299,25 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 		return resp
 	}
 
-	token := model.Token{
-		AccessToken: accessToken,
-		ExpiredAt:   time.Now().AddDate(0, 0, 1).Format(timeFormat),
-		Disabled:    false,
-	}
-
-	err = mongoDb.CreateNewToken(ctx, token)
+	objId, err := primitive.ObjectIDFromHex(user.Id)
 
 	if err != nil {
-		resp.Code = ResCode.Conflict
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
+		return resp
+	}
+
+	res, err = mongoDb.CreateNewToken(ctx, objId, token)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	if res < 1 {
+		resp.Code = ResCode.ServerError
+		resp.Message = "Internal server error"
 		return resp
 	}
 

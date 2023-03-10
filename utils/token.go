@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,11 +12,13 @@ import (
 	mongoDb "gin-mongo/src/mongoDb"
 )
 
+var timeFormat = TimeFormat
+
 func GenerateToken(userId string) (string, error) {
 	claims := jwt.MapClaims{}
 	// claims["authorized"] = true
 	claims["userId"] = userId
-	// claims["expires"] = time.Now().AddDate(0, 0, 1).Unix()
+	claims["exp"] = time.Now().AddDate(0, 0, 1).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -51,12 +54,14 @@ func ExtractTokenId(c *gin.Context) (string, error) {
 		}
 		return []byte("secret"), nil
 	})
+
 	if err != nil {
+		mongoDb.DeleteToken(c.Request.Context(), tokenString)
 		return "", err
 	}
+
 	claims, ok := token.Claims.(jwt.MapClaims)
-	fmt.Println(claims)
-	if ok {
+	if ok && token.Valid {
 		id := fmt.Sprintf("%v", claims["userId"])
 		return id, nil
 	}

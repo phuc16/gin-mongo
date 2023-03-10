@@ -2,39 +2,41 @@ package mongoDb
 
 import (
 	"context"
+	model "gin-mongo/src/models"
 	"log"
-	"time"
-
-	database "gin-mongo/configuration"
-	models "gin-mongo/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var tokenCollection *mongo.Collection = database.GetCollection(database.Client, "tokens")
+// var userCollection *mongo.Collection = database.GetCollection(database.Client, "tokens")
 
-func CreateNewToken(ctx context.Context, token models.Token) error {
-	_, err := tokenCollection.InsertOne(ctx, token)
-
-	if err != nil {
-		return err
+func CreateNewToken(ctx context.Context, objId primitive.ObjectID, token string) (int64, error) {
+	filter := bson.M{
+		"_id": objId,
 	}
 
-	return nil
+	update := bson.M{
+		"$set": bson.M{
+			"token": token,
+		},
+	}
+	res, err := userCollection.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return res.MatchedCount, nil
 }
 
 func GetToken(ctx context.Context, token string) error {
 	filter := bson.M{
-		"access_token": token,
-		"disabled":     false,
-		"expired_at": bson.M{
-			"$gt": time.Now().Format(timeFormat),
-		},
+		"token": token,
 	}
 
-	var res models.Token
-	err := tokenCollection.FindOne(ctx, filter).Decode(&res)
+	var res model.User
+	err := userCollection.FindOne(ctx, filter).Decode(&res)
 
 	log.Println(err)
 
@@ -48,16 +50,16 @@ func GetToken(ctx context.Context, token string) error {
 
 func DeleteToken(ctx context.Context, token string) (int64, error) {
 	filter := bson.M{
-		"access_token": token,
+		"token": token,
 	}
 
 	update := bson.M{
 		"$set": bson.M{
-			"disabled": true,
+			"token": "",
 		},
 	}
 
-	res, err := tokenCollection.UpdateOne(ctx, filter, update)
+	res, err := userCollection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return -1, err

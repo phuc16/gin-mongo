@@ -65,9 +65,9 @@ type UserLoginReq struct {
 }
 
 type UserLoginResp struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    model.Token `json:"data"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    string `json:"data"`
 }
 
 type UserLogoutReq struct {

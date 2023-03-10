@@ -9,6 +9,7 @@ type User struct {
 
 	Status    string `bson:"status" json:"-"`
 	IsLogged  bool   `bson:"is_logged" json:"-"`
+	Token     string `bson:"token" json:"-"`
 	CreatedAt string `bson:"created_at" json:"createdAt"`
 	UpdatedAt string `bson:"updated_at" json:"updatedAt"`
 }

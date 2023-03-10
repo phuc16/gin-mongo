@@ -148,10 +148,10 @@ func logout(c *gin.Context) {
 		response.Code = ResCode.Unauthorized
 		response.Message = "Unauthorized"
 		c.JSON(response.Code, response)
+	} else {
+		response = user.Logout(r.Context(), request)
+		c.JSON(response.Code, response)
 	}
-
-	response = user.Logout(r.Context(), request)
-	c.JSON(response.Code, response)
 }
 
 func getUserByKey(c *gin.Context) {
@@ -185,8 +185,8 @@ func getUserProfile(c *gin.Context) {
 		response.Code = ResCode.Unauthorized
 		response.Message = "Unauthorized"
 		c.JSON(response.Code, response)
+	} else {
+		response = user.GetUserProfile(r.Context(), request)
+		c.JSON(response.Code, response)
 	}
-
-	response = user.GetUserProfile(r.Context(), request)
-	c.JSON(response.Code, response)
 }
