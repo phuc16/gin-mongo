@@ -25,7 +25,7 @@ func UserRoutes(routes *gin.Engine) {
 
 		notAuthRoutes.POST("/login", login)
 		notAuthRoutes.GET("/search", getUserByKey)
-
+		notAuthRoutes.GET("getRole", getRole)
 	}
 
 	authRoutes := routes.Group("api/user", middlewares.Authenticate())
@@ -225,5 +225,22 @@ func updateRole(c *gin.Context) {
 			response = user.UpdateRole(r.Context(), request)
 			c.JSON(response.Code, response)
 		}
+	}
+}
+
+func getRole(c *gin.Context) {
+	var (
+		request  = &user.UserGetRoleReq{}
+		response = user.UserGetRoleResp{}
+		r        = c.Request
+	)
+
+	if err := c.Bind(&request); err != nil {
+		response.Code = ResCode.BadRequest
+		response.Message = err.Error()
+		c.JSON(response.Code, response)
+	} else {
+		response = user.GetRole(r.Context(), request)
+		c.JSON(response.Code, response)
 	}
 }

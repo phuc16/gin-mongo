@@ -14,8 +14,6 @@ import (
 	middlewares "gin-mongo/src/middlewares"
 )
 
-var Global = "aaa"
-
 func main() {
 	log := logrus.New()
 	gin.SetMode(gin.ReleaseMode)

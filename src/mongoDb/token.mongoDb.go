@@ -56,7 +56,7 @@ func DeleteToken(ctx context.Context, token string) (int64, error) {
 	update := bson.M{
 		"$set": bson.M{
 			"token":     "",
-			"is_logger": false,
+			"is_logged": false,
 		},
 	}
 

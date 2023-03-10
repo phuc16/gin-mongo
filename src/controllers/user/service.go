@@ -133,7 +133,7 @@ func GetUserById(ctx context.Context, req *UserGetByIdReq) UserGetByIdResp {
 		return resp
 	}
 
-	res, err := mongoDb.GetUserById(ctx, bson.M{"_id": objId, "status": "active"})
+	res, err := mongoDb.GetUserById(ctx, objId)
 
 	if err == mongo.ErrNoDocuments {
 		resp.Code = ResCode.NotFound
@@ -418,7 +418,7 @@ func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileR
 		return resp
 	}
 
-	res, err := mongoDb.GetUserById(ctx, bson.M{"_id": objId, "status": "active"})
+	res, err := mongoDb.GetUserById(ctx, objId)
 
 	if err == mongo.ErrNoDocuments {
 		resp.Code = ResCode.NotFound
@@ -469,5 +469,46 @@ func UpdateRole(ctx context.Context, req *UserUpdateRoleReq) UserUpdateRoleResp 
 
 	resp.Code = ResCode.Success
 	resp.Message = "Success"
+	return resp
+}
+
+func GetRole(ctx context.Context, req *UserGetRoleReq) UserGetRoleResp {
+	resp := UserGetRoleResp{}
+
+	objId, err := primitive.ObjectIDFromHex(req.Id)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	user, err := mongoDb.GetUserById(ctx, objId)
+
+	if err == mongo.ErrNoDocuments {
+		resp.Code = ResCode.NotFound
+		resp.Message = "Not found"
+		return resp
+	} else if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	role, err := mongoDb.GetRole(ctx, user.RoleCode)
+
+	if err == mongo.ErrNoDocuments {
+		resp.Code = ResCode.NotFound
+		resp.Message = "Not found"
+		return resp
+	} else if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	resp.Code = ResCode.Success
+	resp.Message = "Success"
+	resp.Data = role
 	return resp
 }

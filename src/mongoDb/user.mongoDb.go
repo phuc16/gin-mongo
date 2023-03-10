@@ -17,7 +17,15 @@ var timeFormat = "02/01/2006 15:04:05 -0700"
 var userCollection *mongo.Collection = database.GetCollection(database.Client, "users")
 
 func GetAllUsers(ctx context.Context, fromDate string, toDate string) ([]models.User, error) {
-	res, err := userCollection.Find(ctx, bson.M{"status": "active", "created_at": bson.M{"$gte": fromDate, "$lt": toDate}})
+	filter := bson.M{
+		"status": "active",
+		"created_at": bson.M{
+			"$gte": fromDate,
+			"$lt":  toDate,
+		},
+	}
+
+	res, err := userCollection.Find(ctx, filter)
 
 	if err != nil {
 		return nil, err
@@ -38,7 +46,12 @@ func GetAllUsers(ctx context.Context, fromDate string, toDate string) ([]models.
 	return users, err
 }
 
-func GetUserById(ctx context.Context, filter bson.M) (models.User, error) {
+func GetUserById(ctx context.Context, objId primitive.ObjectID) (models.User, error) {
+	filter := bson.M{
+		"_id":    objId,
+		"status": "active",
+	}
+
 	var res models.User
 	err := userCollection.FindOne(ctx, filter).Decode(&res)
 
@@ -201,6 +214,8 @@ func UpdateRole(ctx context.Context, objId primitive.ObjectID, roleCode int) (in
 	update := bson.M{
 		"$set": bson.M{
 			"role_code":  roleCode,
+			"token":      "",
+			"is_logged":  false,
 			"updated_at": time.Now().Format(timeFormat),
 		},
 	}

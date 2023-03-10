@@ -110,3 +110,13 @@ type UserUpdateRoleResp struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
+
+type UserGetRoleReq struct {
+	Id string `form:"id" json:"id"`
+}
+
+type UserGetRoleResp struct {
+	Code    int        `json:"code"`
+	Message string     `json:"message`
+	Data    model.Role `json:"data"`
+}
