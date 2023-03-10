@@ -5,6 +5,7 @@ import (
 	model "gin-mongo/src/models"
 	"gin-mongo/src/mongoDb"
 	utils "gin-mongo/utils"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,7 +28,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 
 	//Kiểm tra user đã tồn tài chưa
 
-	_, err := mongoDb.GetUserByName(ctx, bson.M{"name": req.Name, "status": "active"})
+	_, err := mongoDb.GetUserByName(ctx, req.Name)
 
 	if err != nil && err != mongo.ErrNoDocuments {
 		resp.Code = ResCode.BadRequest
@@ -160,7 +161,7 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
-	if req.FullName == "" || req.Password == "" || req.Age == 0 {
+	if req.FullName == "" || req.Age == 0 {
 		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
@@ -174,8 +175,6 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 		return resp
 	}
 
-	password, err := utils.HashPassword(req.Password)
-
 	if err != nil {
 		resp.Code = ResCode.ServerError
 		resp.Message = "Internal server error"
@@ -184,7 +183,6 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 
 	newUser := model.User{
 		FullName:  req.FullName,
-		Password:  password,
 		Age:       req.Age,
 		UpdatedAt: time.Now().Format(timeFormat),
 	}
@@ -259,7 +257,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 		return resp
 	}
 
-	user, err := mongoDb.GetUserByName(ctx, bson.M{"name": req.Name, "status": "active"})
+	user, err := mongoDb.GetUserByName(ctx, req.Name)
 
 	if err == mongo.ErrNoDocuments {
 		resp.Code = ResCode.Unauthorized
@@ -510,5 +508,62 @@ func GetRole(ctx context.Context, req *UserGetRoleReq) UserGetRoleResp {
 	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = role
+	return resp
+}
+
+func ChangePassword(ctx context.Context, req *UserChangePasswordReq) UserChangePasswordResp {
+	resp := UserChangePasswordResp{}
+	log.Println(req)
+
+	if req.Name == "" || req.OldPassword == "" || req.NewPassword == "" {
+		resp.Code = ResCode.BadRequest
+		resp.Message = "Invalid data"
+		return resp
+	}
+
+	user, err := mongoDb.GetUserByName(ctx, req.Name)
+
+	if err == mongo.ErrNoDocuments {
+		resp.Code = ResCode.Unauthorized
+		resp.Message = "User hasn't been registered"
+		return resp
+	} else if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	if utils.CheckPasswordHash(req.OldPassword, user.Password) == false {
+		resp.Code = ResCode.Unauthorized
+		resp.Message = "Password is incorrect"
+		return resp
+	}
+
+	newPassword, err := utils.HashPassword(req.NewPassword)
+
+	objId, err := primitive.ObjectIDFromHex(user.Id)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	res, err := mongoDb.ChangePassword(ctx, objId, newPassword)
+
+	if err != nil {
+		resp.Code = ResCode.BadRequest
+		resp.Message = err.Error()
+		return resp
+	}
+
+	if res < 1 {
+		resp.Code = ResCode.NotFound
+		resp.Message = "Not found"
+		return resp
+	}
+
+	resp.Code = ResCode.Success
+	resp.Message = "Success"
 	return resp
 }

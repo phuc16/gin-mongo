@@ -5,11 +5,11 @@ import (
 )
 
 type UserRegisterReq struct { //request API
-	Name     string `json:"name"`
-	FullName string `json:"fullName"`
-	Age      int    `json:"age"`
-	Password string `json:"password"`
-	RoleCode int    `json:"roleCode"`
+	Name     string `form:"name" json:"name"`
+	FullName string `form:"fullName" json:"fullName"`
+	Age      int    `form:"age" json:"age"`
+	Password string `form:"password" json:"password"`
+	RoleCode int    `form:"roleCode" json:"roleCode"`
 }
 
 type UserRegisterResp struct { //response API
@@ -39,11 +39,10 @@ type UserGetByIdResp struct {
 }
 
 type UserUpdateByIdReq struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	FullName string `json:"fullName"`
-	Age      int    `json:"age"`
-	Password string `json:"password"`
+	Id       string `form:"id" json:"id"`
+	Name     string `form:"name" json:"name"`
+	FullName string `form:"fullName" json:"fullName"`
+	Age      int    `form:"age" json:"age"`
 }
 
 type UserUpdateByIdResp struct {
@@ -61,8 +60,8 @@ type UserDeleteByIdResp struct {
 }
 
 type UserLoginReq struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Name     string `form:"name" json:"name"`
+	Password string `form:"password" json:"password"`
 }
 
 type UserLoginResp struct {
@@ -89,6 +88,15 @@ type UserGetByKeyResp struct {
 	Code    int          `json:"code"`
 	Message string       `json:"message"`
 	Data    []model.User `json:"data"`
+}
+type UserChangePasswordReq struct {
+	Name        string `form:"name" json:"name"`
+	OldPassword string `form:"oldPassword" json:"oldPassword"`
+	NewPassword string `form:"newPassword" json:"newPassword"`
+}
+type UserChangePasswordResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 type UserGetProfileReq struct {
 	Id string
@@ -117,6 +125,6 @@ type UserGetRoleReq struct {
 
 type UserGetRoleResp struct {
 	Code    int        `json:"code"`
-	Message string     `json:"message`
+	Message string     `json:"message"`
 	Data    model.Role `json:"data"`
 }

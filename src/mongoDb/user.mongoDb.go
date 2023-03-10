@@ -62,7 +62,12 @@ func GetUserById(ctx context.Context, objId primitive.ObjectID) (models.User, er
 	return res, nil
 }
 
-func GetUserByName(ctx context.Context, filter bson.M) (models.User, error) {
+func GetUserByName(ctx context.Context, name string) (models.User, error) {
+	filter := bson.M{
+		"name":   name,
+		"status": "active",
+	}
+
 	var res models.User
 	err := userCollection.FindOne(ctx, filter).Decode(&res)
 
@@ -78,7 +83,6 @@ func UpdateUserById(ctx context.Context, filter bson.M, user models.User) (int64
 		"$set": bson.M{
 			"full_name":  user.FullName,
 			"age":        user.Age,
-			"password":   user.Password,
 			"updated_at": user.UpdatedAt,
 		},
 	}
@@ -217,6 +221,29 @@ func UpdateRole(ctx context.Context, objId primitive.ObjectID, roleCode int) (in
 			"token":      "",
 			"is_logged":  false,
 			"updated_at": time.Now().Format(timeFormat),
+		},
+	}
+
+	res, err := userCollection.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return res.MatchedCount, nil
+}
+
+func ChangePassword(ctx context.Context, objId primitive.ObjectID, password string) (int64, error) {
+	filter := bson.M{
+		"_id":    objId,
+		"status": "active",
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"password":  password,
+			"token":     "",
+			"is_logged": false,
 		},
 	}
 

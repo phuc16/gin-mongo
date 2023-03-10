@@ -22,6 +22,7 @@ func UserRoutes(routes *gin.Engine) {
 
 		notAuthRoutes.PUT("/updateById", updateUserById)  //sua lai query param giup anh nhen
 		notAuthRoutes.POST("/deleteById", deleteUserById) //sua lai query param giup anh nhen
+		notAuthRoutes.POST("/changePassword", changePassword)
 
 		notAuthRoutes.POST("/login", login)
 		notAuthRoutes.GET("/search", getUserByKey)
@@ -241,6 +242,23 @@ func getRole(c *gin.Context) {
 		c.JSON(response.Code, response)
 	} else {
 		response = user.GetRole(r.Context(), request)
+		c.JSON(response.Code, response)
+	}
+}
+
+func changePassword(c *gin.Context) {
+	var (
+		request  = &user.UserChangePasswordReq{}
+		response = user.UserChangePasswordResp{}
+		r        = c.Request
+	)
+
+	if err := c.Bind(&request); err != nil {
+		response.Code = ResCode.BadRequest
+		response.Message = err.Error()
+		c.JSON(response.Code, response)
+	} else {
+		response = user.ChangePassword(r.Context(), request)
 		c.JSON(response.Code, response)
 	}
 }
