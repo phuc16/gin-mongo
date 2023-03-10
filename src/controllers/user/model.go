@@ -9,7 +9,6 @@ type UserRegisterReq struct { //request API
 	FullName string `form:"fullName" json:"fullName"`
 	Age      int    `form:"age" json:"age"`
 	Password string `form:"password" json:"password"`
-	RoleCode int    `form:"roleCode" json:"roleCode"`
 }
 
 type UserRegisterResp struct { //response API
@@ -119,12 +118,18 @@ type UserUpdateRoleResp struct {
 	Message string `json:"message"`
 }
 
-type UserGetRoleReq struct {
-	Id string `form:"id" json:"id"`
-}
+// type UserGetRoleReq struct {
+// 	Id string `form:"id" json:"id"`
+// }
 
-type UserGetRoleResp struct {
-	Code    int        `json:"code"`
-	Message string     `json:"message"`
-	Data    model.Role `json:"data"`
+// type UserGetRoleResp struct {
+// 	Code    int        `json:"code"`
+// 	Message string     `json:"message"`
+// 	Data    model.Role `json:"data"`
+// }
+
+type UserGetRolesListResp struct {
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Data    []model.Role `json:"data"`
 }

@@ -3,9 +3,8 @@ package user
 import (
 	"context"
 	model "gin-mongo/src/models"
-	"gin-mongo/src/mongoDb"
+	mongoDb "gin-mongo/src/mongoDb"
 	utils "gin-mongo/utils"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,7 +18,7 @@ var ResCode = utils.ResCode
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	//Check validate
 	resp := UserRegisterResp{}
-	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" || req.RoleCode == 0 {
+	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" {
 		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
@@ -55,7 +54,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 		Name:      req.Name,
 		FullName:  req.FullName,
 		Age:       req.Age,
-		RoleCode:  req.RoleCode,
+		RoleCode:  1,
 		Password:  password,
 		Status:    "active",
 		IsLogged:  false,
@@ -470,10 +469,51 @@ func UpdateRole(ctx context.Context, req *UserUpdateRoleReq) UserUpdateRoleResp 
 	return resp
 }
 
-func GetRole(ctx context.Context, req *UserGetRoleReq) UserGetRoleResp {
-	resp := UserGetRoleResp{}
+// func GetRole(ctx context.Context, req *UserGetRoleReq) UserGetRoleResp {
+// 	resp := UserGetRoleResp{}
 
-	objId, err := primitive.ObjectIDFromHex(req.Id)
+// 	objId, err := primitive.ObjectIDFromHex(req.Id)
+
+// 	if err != nil {
+// 		resp.Code = ResCode.BadRequest
+// 		resp.Message = err.Error()
+// 		return resp
+// 	}
+
+// 	user, err := mongoDb.GetUserById(ctx, objId)
+
+// 	if err == mongo.ErrNoDocuments {
+// 		resp.Code = ResCode.NotFound
+// 		resp.Message = "Not found"
+// 		return resp
+// 	} else if err != nil {
+// 		resp.Code = ResCode.BadRequest
+// 		resp.Message = err.Error()
+// 		return resp
+// 	}
+
+// 	role, err := mongoDb.GetRole(ctx, user.RoleCode)
+
+// 	if err == mongo.ErrNoDocuments {
+// 		resp.Code = ResCode.NotFound
+// 		resp.Message = "Not found"
+// 		return resp
+// 	} else if err != nil {
+// 		resp.Code = ResCode.BadRequest
+// 		resp.Message = err.Error()
+// 		return resp
+// 	}
+
+// 	resp.Code = ResCode.Success
+// 	resp.Message = "Success"
+// 	resp.Data = role
+// 	return resp
+// }
+
+func GetRolesList(ctx context.Context) UserGetRolesListResp {
+	resp := UserGetRolesListResp{}
+
+	res, err := mongoDb.GetRolesList(ctx)
 
 	if err != nil {
 		resp.Code = ResCode.BadRequest
@@ -481,39 +521,15 @@ func GetRole(ctx context.Context, req *UserGetRoleReq) UserGetRoleResp {
 		return resp
 	}
 
-	user, err := mongoDb.GetUserById(ctx, objId)
-
-	if err == mongo.ErrNoDocuments {
-		resp.Code = ResCode.NotFound
-		resp.Message = "Not found"
-		return resp
-	} else if err != nil {
-		resp.Code = ResCode.BadRequest
-		resp.Message = err.Error()
-		return resp
-	}
-
-	role, err := mongoDb.GetRole(ctx, user.RoleCode)
-
-	if err == mongo.ErrNoDocuments {
-		resp.Code = ResCode.NotFound
-		resp.Message = "Not found"
-		return resp
-	} else if err != nil {
-		resp.Code = ResCode.BadRequest
-		resp.Message = err.Error()
-		return resp
-	}
-
 	resp.Code = ResCode.Success
 	resp.Message = "Success"
-	resp.Data = role
+	resp.Data = res
 	return resp
 }
 
 func ChangePassword(ctx context.Context, req *UserChangePasswordReq) UserChangePasswordResp {
 	resp := UserChangePasswordResp{}
-	log.Println(req)
+	// log.Println(req)
 
 	if req.Name == "" || req.OldPassword == "" || req.NewPassword == "" {
 		resp.Code = ResCode.BadRequest

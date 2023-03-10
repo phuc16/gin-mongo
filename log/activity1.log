@@ -567,3 +567,54 @@ time="2023-03-10T16:25:36+07:00" level=warning clientIP="::1" dataLength=37 late
 time="2023-03-10T16:27:04+07:00" level=warning clientIP="::1" dataLength=37 latency=1ms method=POST path=/api/user/changePassword referer= statusCode=400 userAgent=PostmanRuntime/7.29.2
 time="2023-03-10T16:27:58+07:00" level=warning clientIP="::1" dataLength=46 latency=56ms method=POST path=/api/user/changePassword referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
 time="2023-03-10T16:28:06+07:00" level=warning clientIP="::1" dataLength=76 latency=108ms method=POST path=/api/user/changePassword referer= statusCode=400 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:28:46+07:00" level=info clientIP="::1" dataLength=32 latency=111ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:28:48+07:00" level=warning clientIP="::1" dataLength=46 latency=55ms method=POST path=/api/user/changePassword referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:28:53+07:00" level=warning clientIP="::1" dataLength=56 latency=56ms method=POST path=/api/user/login referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:28:57+07:00" level=info clientIP="::1" dataLength=213 latency=57ms method=POST path=/api/user/login referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:29:19+07:00" level=warning clientIP="::1" dataLength=46 latency=56ms method=POST path=/api/user/changePassword referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:29:21+07:00" level=info clientIP="::1" dataLength=32 latency=122ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:29:24+07:00" level=warning clientIP="::1" dataLength=56 latency=56ms method=POST path=/api/user/login referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:29:27+07:00" level=info clientIP="::1" dataLength=213 latency=58ms method=POST path=/api/user/login referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:29:38+07:00" level=info clientIP="::1" dataLength=32 latency=2ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:31:34+07:00" level=info clientIP="::1" dataLength=213 latency=55ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:34+07:00" level=info clientIP="::1" dataLength=294 latency=1ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:34+07:00" level=info clientIP="::1" dataLength=32 latency=1ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:49+07:00" level=info clientIP="::1" dataLength=213 latency=56ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:49+07:00" level=info clientIP="::1" dataLength=294 latency=1ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:49+07:00" level=info clientIP="::1" dataLength=32 latency=2ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:31:59+07:00" level=info clientIP="::1" dataLength=32 latency=110ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:32:01+07:00" level=warning clientIP="::1" dataLength=46 latency=57ms method=POST path=/api/user/changePassword referer= statusCode=401 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:32:04+07:00" level=warning clientIP="::1" dataLength=56 latency=54ms method=POST path=/api/user/login referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:04+07:00" level=warning clientIP="::1" dataLength=143 latency=1ms method=GET path=/api/user/profile referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:04+07:00" level=warning clientIP="::1" dataLength=37 latency=1ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:13+07:00" level=info clientIP="::1" dataLength=32 latency=109ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:32:15+07:00" level=info clientIP="::1" dataLength=213 latency=55ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:15+07:00" level=info clientIP="::1" dataLength=294 latency=2ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:15+07:00" level=info clientIP="::1" dataLength=32 latency=1ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:22+07:00" level=info clientIP="::1" dataLength=32 latency=112ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:32:25+07:00" level=warning clientIP="::1" dataLength=56 latency=54ms method=POST path=/api/user/login referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:25+07:00" level=warning clientIP="::1" dataLength=143 latency=1ms method=GET path=/api/user/profile referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:32:25+07:00" level=warning clientIP="::1" dataLength=37 latency=1ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:37:54+07:00" level=warning clientIP="::1" dataLength=56 latency=55ms method=POST path=/api/user/login referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:37:54+07:00" level=warning clientIP="::1" dataLength=143 latency=1ms method=GET path=/api/user/profile referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:37:54+07:00" level=warning clientIP="::1" dataLength=37 latency=1ms method=POST path=/api/user/logout referer= statusCode=401 userAgent=Go-http-client/1.1
+time="2023-03-10T16:38:03+07:00" level=info clientIP="::1" dataLength=32 latency=111ms method=POST path=/api/user/changePassword referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:38:05+07:00" level=info clientIP="::1" dataLength=213 latency=56ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:38:05+07:00" level=info clientIP="::1" dataLength=294 latency=2ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:38:05+07:00" level=info clientIP="::1" dataLength=32 latency=1ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T16:47:53+07:00" level=info clientIP="::1" dataLength=80 latency=2ms method=GET path=/api/user/getRole referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:48:04+07:00" level=info clientIP="::1" dataLength=80 latency=2ms method=GET path=/api/user/getRole referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:48:06+07:00" level=info clientIP="::1" dataLength=80 latency=2ms method=GET path=/api/user/getRole referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:48:12+07:00" level=info clientIP="::1" dataLength=80 latency=2ms method=GET path=/api/user/getRole referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T16:59:03+07:00" level=info clientIP="::1" dataLength=552 latency=2ms method=GET path=/api/user/getAll referer= statusCode=200 userAgent=PostmanRuntime/7.29.2
+time="2023-03-10T17:07:55+07:00" level=info msg="Listening on :5000"
+time="2023-03-10T17:08:46+07:00" level=info msg="Listening on :5000"
+time="2023-03-10T17:09:07+07:00" level=info msg="Listening on :"
+time="2023-03-10T17:09:35+07:00" level=info msg="Listening on :5000"
+time="2023-03-10T17:09:35+07:00" level=info msg="Listening on :5000"
+time="2023-03-10T17:11:57+07:00" level=info clientIP="::1" dataLength=213 latency=56ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T17:11:57+07:00" level=info clientIP="::1" dataLength=294 latency=1ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T17:11:57+07:00" level=info clientIP="::1" dataLength=32 latency=1ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T17:29:52+07:00" level=info clientIP="::1" dataLength=213 latency=54ms method=POST path=/api/user/login referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T17:29:52+07:00" level=info clientIP="::1" dataLength=294 latency=2ms method=GET path=/api/user/profile referer= statusCode=200 userAgent=Go-http-client/1.1
+time="2023-03-10T17:29:52+07:00" level=info clientIP="::1" dataLength=32 latency=1ms method=POST path=/api/user/logout referer= statusCode=200 userAgent=Go-http-client/1.1

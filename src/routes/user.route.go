@@ -26,7 +26,8 @@ func UserRoutes(routes *gin.Engine) {
 
 		notAuthRoutes.POST("/login", login)
 		notAuthRoutes.GET("/search", getUserByKey)
-		notAuthRoutes.GET("getRole", getRole)
+		// notAuthRoutes.GET("/getRole", getRole)
+		notAuthRoutes.GET("/getRolesList", getRolesList)
 	}
 
 	authRoutes := routes.Group("api/user", middlewares.Authenticate())
@@ -229,21 +230,31 @@ func updateRole(c *gin.Context) {
 	}
 }
 
-func getRole(c *gin.Context) {
+// func getRole(c *gin.Context) {
+// 	var (
+// 		request  = &user.UserGetRoleReq{}
+// 		response = user.UserGetRoleResp{}
+// 		r        = c.Request
+// 	)
+
+// 	if err := c.Bind(&request); err != nil {
+// 		response.Code = ResCode.BadRequest
+// 		response.Message = err.Error()
+// 		c.JSON(response.Code, response)
+// 	} else {
+// 		response = user.GetRole(r.Context(), request)
+// 		c.JSON(response.Code, response)
+// 	}
+// }
+
+func getRolesList(c *gin.Context) {
 	var (
-		request  = &user.UserGetRoleReq{}
-		response = user.UserGetRoleResp{}
+		response = user.UserGetRolesListResp{}
 		r        = c.Request
 	)
 
-	if err := c.Bind(&request); err != nil {
-		response.Code = ResCode.BadRequest
-		response.Message = err.Error()
-		c.JSON(response.Code, response)
-	} else {
-		response = user.GetRole(r.Context(), request)
-		c.JSON(response.Code, response)
-	}
+	response = user.GetRolesList(r.Context())
+	c.JSON(response.Code, response)
 }
 
 func changePassword(c *gin.Context) {
