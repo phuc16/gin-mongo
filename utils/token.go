@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -14,9 +13,9 @@ import (
 
 func GenerateToken(userId string) (string, error) {
 	claims := jwt.MapClaims{}
-	claims["authorized"] = true
+	// claims["authorized"] = true
 	claims["userId"] = userId
-	claims["expires"] = time.Now().AddDate(0, 0, 1).Unix()
+	// claims["expires"] = time.Now().AddDate(0, 0, 1).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

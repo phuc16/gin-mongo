@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ResCode = utils.ResCode
+
 func UserRoutes(routes *gin.Engine) {
 	notAuthRoutes := routes.Group("api/user")
 	{
@@ -21,6 +23,7 @@ func UserRoutes(routes *gin.Engine) {
 
 		notAuthRoutes.POST("/login", login)
 		notAuthRoutes.GET("/search", getUserByKey)
+
 	}
 
 	authRoutes := routes.Group("api/user", middlewares.Authenticate())
@@ -38,7 +41,7 @@ func createUserNew(c *gin.Context) {
 	)
 	if err := c.Bind(&request); err != nil {
 		//
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -55,7 +58,7 @@ func getAllUsers(c *gin.Context) {
 	)
 
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -72,7 +75,7 @@ func getUserById(c *gin.Context) {
 	)
 
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -89,7 +92,7 @@ func updateUserById(c *gin.Context) {
 	)
 
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -105,7 +108,7 @@ func deleteUserById(c *gin.Context) {
 		r        = c.Request
 	)
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -122,7 +125,7 @@ func login(c *gin.Context) {
 	)
 
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -142,7 +145,7 @@ func logout(c *gin.Context) {
 	request.Token = utils.ExtractToken(c)
 
 	if err != nil {
-		response.Code = 401
+		response.Code = ResCode.Unauthorized
 		response.Message = "Unauthorized"
 		c.JSON(response.Code, response)
 	}
@@ -159,7 +162,7 @@ func getUserByKey(c *gin.Context) {
 	)
 
 	if err := c.Bind(&request); err != nil {
-		response.Code = 400
+		response.Code = ResCode.BadRequest
 		response.Message = err.Error()
 		c.JSON(response.Code, response)
 	} else {
@@ -179,7 +182,7 @@ func getUserProfile(c *gin.Context) {
 	request.Id, err = utils.ExtractTokenId(c)
 
 	if err != nil {
-		response.Code = 401
+		response.Code = ResCode.Unauthorized
 		response.Message = "Unauthorized"
 		c.JSON(response.Code, response)
 	}

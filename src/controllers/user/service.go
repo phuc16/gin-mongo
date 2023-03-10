@@ -13,12 +13,13 @@ import (
 )
 
 var timeFormat = "02/01/2006 15:04:05 -0700"
+var ResCode = utils.ResCode
 
 func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	//Check validate
 	resp := UserRegisterResp{}
 	if req.Name == "" || req.FullName == "" || req.Age == 0 || req.Password == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
 	}
@@ -31,13 +32,13 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	_, err := mongoDb.GetUserByName(ctx, bson.M{"name": req.Name, "status": "active"})
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if !(err == mongo.ErrNoDocuments) {
-		resp.Code = 409
+		resp.Code = ResCode.Conflict
 		resp.Message = "User is exist"
 		return resp
 	}
@@ -45,7 +46,7 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	password, err := utils.HashPassword(req.Password)
 
 	if err != nil {
-		resp.Code = 500
+		resp.Code = ResCode.ServerError
 		resp.Message = "Internal server error"
 		return resp
 	}
@@ -65,13 +66,13 @@ func CreateUserNew(ctx context.Context, req *UserRegisterReq) UserRegisterResp {
 	err = mongoDb.CreateUserNew(ctx, userMongo)
 	// if insert db err
 	if err != nil {
-		resp.Code = 409
+		resp.Code = ResCode.Conflict
 		resp.Message = err.Error()
 		return resp
 	}
 
 	//if success
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	return resp
 
@@ -84,7 +85,7 @@ func GetAllUsers(ctx context.Context, req *UserGetAllReq) UserGetAllResp {
 		tmpFromDate, err := time.Parse(timeFormat, timeFormat)
 
 		if err != nil {
-			resp.Code = 400
+			resp.Code = ResCode.BadRequest
 			resp.Message = "Bad request"
 			return resp
 		}
@@ -93,7 +94,7 @@ func GetAllUsers(ctx context.Context, req *UserGetAllReq) UserGetAllResp {
 	}
 
 	if req.ToDate == "" {
-		// resp.Code = 400
+		// resp.Code = ResCode.BadRequest
 		// resp.Message = "Invalid date"
 		// return resp
 		req.ToDate = time.Now().Format(timeFormat)
@@ -104,12 +105,12 @@ func GetAllUsers(ctx context.Context, req *UserGetAllReq) UserGetAllResp {
 	res, err := mongoDb.GetAllUsers(ctx, req.FromDate, req.ToDate)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = res
 	return resp
@@ -120,7 +121,7 @@ func GetUserById(ctx context.Context, req *UserGetByIdReq) UserGetByIdResp {
 	// log.Println("userId", req.Id)
 
 	if req.Id == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
@@ -128,7 +129,7 @@ func GetUserById(ctx context.Context, req *UserGetByIdReq) UserGetByIdResp {
 	objId, err := primitive.ObjectIDFromHex(req.Id)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
@@ -136,16 +137,16 @@ func GetUserById(ctx context.Context, req *UserGetByIdReq) UserGetByIdResp {
 	res, err := mongoDb.GetUserById(ctx, bson.M{"_id": objId, "status": "active"})
 
 	if err == mongo.ErrNoDocuments {
-		resp.Code = 404
+		resp.Code = ResCode.NotFound
 		resp.Message = "Not found"
 		return resp
 	} else if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = res
 	return resp
@@ -156,12 +157,12 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 	// log.Println(req)
 
 	if req.Id == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
 	if req.FullName == "" || req.Password == "" || req.Age == 0 {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
 	}
@@ -169,7 +170,7 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 	objId, err := primitive.ObjectIDFromHex(req.Id)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
@@ -177,7 +178,7 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 	password, err := utils.HashPassword(req.Password)
 
 	if err != nil {
-		resp.Code = 500
+		resp.Code = ResCode.ServerError
 		resp.Message = "Internal server error"
 		return resp
 	}
@@ -197,18 +198,18 @@ func UpdateUserById(ctx context.Context, req *UserUpdateByIdReq) UserUpdateByIdR
 	res, err := mongoDb.UpdateUserById(ctx, filter, newUser)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if res < 1 {
-		resp.Code = 404
+		resp.Code = ResCode.NotFound
 		resp.Message = "Not found"
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	return resp
 }
@@ -218,7 +219,7 @@ func DeleteUserById(ctx context.Context, req *UserDeleteByIdReq) UserDeleteByIdR
 	// log.Println(req)
 
 	if req.Id == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
@@ -226,7 +227,7 @@ func DeleteUserById(ctx context.Context, req *UserDeleteByIdReq) UserDeleteByIdR
 	objId, err := primitive.ObjectIDFromHex(req.Id)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
@@ -234,18 +235,18 @@ func DeleteUserById(ctx context.Context, req *UserDeleteByIdReq) UserDeleteByIdR
 	res, err := mongoDb.DeleteUserById(ctx, objId)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if res < 1 {
-		resp.Code = 404
+		resp.Code = ResCode.NotFound
 		resp.Message = "Not found"
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	return resp
 }
@@ -254,7 +255,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	resp := UserLoginResp{}
 
 	if req.Name == "" || req.Password == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
 	}
@@ -262,17 +263,17 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	user, err := mongoDb.GetUserByName(ctx, bson.M{"name": req.Name, "status": "active"})
 
 	if err == mongo.ErrNoDocuments {
-		resp.Code = 401
+		resp.Code = ResCode.Unauthorized
 		resp.Message = "User hasn't been registered"
 		return resp
 	} else if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if utils.CheckPasswordHash(req.Password, user.Password) == false {
-		resp.Code = 401
+		resp.Code = ResCode.Unauthorized
 		resp.Message = "Password is incorrect"
 		return resp
 	}
@@ -280,13 +281,13 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	res, err := mongoDb.UserLogin(ctx, bson.M{"name": user.Name, "is_logged": false})
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if res < 1 {
-		resp.Code = 409
+		resp.Code = ResCode.Conflict
 		resp.Message = "User is logged"
 		return resp
 	}
@@ -295,7 +296,7 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	accessToken, err := utils.GenerateToken(user.Id)
 
 	if err != nil {
-		resp.Code = 409
+		resp.Code = ResCode.Conflict
 		resp.Message = err.Error()
 		return resp
 	}
@@ -309,12 +310,12 @@ func Login(ctx context.Context, req *UserLoginReq) UserLoginResp {
 	err = mongoDb.CreateNewToken(ctx, token)
 
 	if err != nil {
-		resp.Code = 409
+		resp.Code = ResCode.Conflict
 		resp.Message = err.Error()
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = token
 	return resp
@@ -324,7 +325,7 @@ func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	resp := UserLogoutResp{}
 
 	if req.Id == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Invalid data"
 		return resp
 	}
@@ -332,7 +333,7 @@ func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	objId, err := primitive.ObjectIDFromHex(req.Id)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
@@ -340,13 +341,13 @@ func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	res, err := mongoDb.UserLogout(ctx, objId)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if res < 1 {
-		resp.Code = 401
+		resp.Code = ResCode.Unauthorized
 		resp.Message = "User hasn't been registered or logged"
 		return resp
 	}
@@ -354,18 +355,18 @@ func Logout(ctx context.Context, req *UserLogoutReq) UserLogoutResp {
 	res, err = mongoDb.DeleteToken(ctx, req.Token)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
 	if res < 1 {
-		resp.Code = 401
+		resp.Code = ResCode.Unauthorized
 		resp.Message = "User hasn't been registered or logged"
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	return resp
 
@@ -377,16 +378,16 @@ func GetUserByKey(ctx context.Context, req *UserGetByKeyReq) UserGetByKeyResp {
 	res, err := mongoDb.GetUserByKey(ctx, req.Search)
 
 	if err == mongo.ErrNoDocuments {
-		resp.Code = 404
+		resp.Code = ResCode.NotFound
 		resp.Message = "Not found"
 		return resp
 	} else if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = res
 	return resp
@@ -397,7 +398,7 @@ func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileR
 	// log.Println("userId", req.Id)
 
 	if req.Id == "" {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = "Id không tồn tại"
 		return resp
 	}
@@ -405,7 +406,7 @@ func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileR
 	objId, err := primitive.ObjectIDFromHex(req.Id)
 
 	if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
@@ -413,16 +414,16 @@ func GetUserProfile(ctx context.Context, req *UserGetProfileReq) UserGetProfileR
 	res, err := mongoDb.GetUserById(ctx, bson.M{"_id": objId, "status": "active"})
 
 	if err == mongo.ErrNoDocuments {
-		resp.Code = 404
+		resp.Code = ResCode.NotFound
 		resp.Message = "Not found"
 		return resp
 	} else if err != nil {
-		resp.Code = 400
+		resp.Code = ResCode.BadRequest
 		resp.Message = err.Error()
 		return resp
 	}
 
-	resp.Code = 200
+	resp.Code = ResCode.Success
 	resp.Message = "Success"
 	resp.Data = res
 	return resp

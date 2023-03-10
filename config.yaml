@@ -1,2 +1,10 @@
 port: 5000
 url: mongodb://localhost:27017
+response_code:
+  success: 200
+  bad_request: 400
+  unauthorized: 401
+  not_found: 404
+  conflict: 409
+  server_error: 500
+  forbidden: 403
